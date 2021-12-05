@@ -2,7 +2,6 @@ package pl.edu.agh.kis.pz1;
 
 import java.io.IOException;
 import java.util.Scanner;
-import pl.edu.agh.kis.pz1.util.TextUtils;
 
 public class Main1 {
     public static void main( String[] args ) throws IOException {

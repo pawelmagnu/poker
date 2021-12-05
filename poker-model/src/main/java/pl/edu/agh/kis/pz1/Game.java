@@ -8,7 +8,6 @@ import pl.edu.agh.kis.pz1.util.TextUtils;
 
 public class Game {
     private ClientThread[] clients;
-    private int currentPlayer;
     private int[] currentBids;
     private int currentMaxBid;
     private int totalBid;
@@ -104,10 +103,8 @@ public class Game {
                 }
             }
             for (ClientThread player : clients) {
-                if (player.player.isInGame()) {
-                    if (currentBids[player.player.getPlayerID()] != currentMaxBid) {
-                        flag = false;
-                    }
+                if (player.player.isInGame() && currentBids[player.player.getPlayerID()] != currentMaxBid) {
+                    flag = false;
                 }
             }
         }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="pl.edu.agh.kis.pz1.Main2Test" time="0.005" errors="0" skipped="0">
+<testsuite tests="1" failures="0" name="pl.edu.agh.kis.pz1.Main2Test" time="0.004" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="idea.version" value="2021.2.2"/>
@@ -29,6 +29,7 @@
     <property name="maven.ext.class.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2021.2.2\plugins\maven\lib\maven-event-listener.jar"/>
     <property name="classworlds.conf" value="C:\Program Files\JetBrains\IntelliJ IDEA 2021.2.2\plugins\maven\lib\maven3\bin\m2.conf"/>
     <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="sonar.login" value="675f9f652d1ecc1d9de325b49c4cd8c52e96c412"/>
     <property name="java.library.path" value="C:\Program Files\Java\jdk-17\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Git\cmd;C:\Program Files\PuTTY\;C:\Program Files\CMake\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Users\Pawel\AppData\Local\Programs\Python\Python39\Scripts\;C:\Users\Pawel\AppData\Local\Programs\Python\Python39\;C:\Users\Pawel\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm Community Edition 2021.1\bin;;C:\Program Files\JetBrains\JetBrains DataSpell 213.4250.391\bin;;C:\Users\Pawel\Documents\flutter\bin;;."/>
     <property name="maven.conf" value="C:\Program Files\JetBrains\IntelliJ IDEA 2021.2.2\plugins\maven\lib\maven3/conf"/>
     <property name="jdk.debug" value="release"/>
@@ -38,13 +39,15 @@
     <property name="os.version" value="10.0"/>
     <property name="user.home" value="C:\Users\Pawel"/>
     <property name="user.timezone" value="Europe/Warsaw"/>
+    <property name="sonar.host.url" value="http://localhost:9000"/>
     <property name="file.encoding" value="UTF-8"/>
     <property name="java.specification.version" value="17"/>
-    <property name="user.name" value="Pawel"/>
+    <property name="sonar.projectKey" value="poker"/>
     <property name="java.class.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2021.2.2\plugins\maven\lib\maven3\boot\plexus-classworlds-2.6.0.jar;C:\Program Files\JetBrains\IntelliJ IDEA 2021.2.2\plugins\maven\lib\maven3\boot\plexus-classworlds.license"/>
+    <property name="user.name" value="Pawel"/>
     <property name="java.vm.specification.version" value="17"/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -Didea.version=2021.2.2 clean package"/>
+    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -Didea.version=2021.2.2 clean verify sonar:sonar \ -Dsonar.projectKey=poker \ -Dsonar.host.url=http://localhost:9000 \ -Dsonar.login=675f9f652d1ecc1d9de325b49c4cd8c52e96c412"/>
     <property name="java.home" value="C:\Program Files\Java\jdk-17"/>
     <property name="user.language" value="en"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
@@ -60,5 +63,5 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="pl.edu.agh.kis.pz1.Main2Test" name="shouldCreateMainObject" time="0.005"/>
+  <testcase classname="pl.edu.agh.kis.pz1.Main2Test" name="shouldCreateMainObject" time="0.004"/>
 </testsuite>
