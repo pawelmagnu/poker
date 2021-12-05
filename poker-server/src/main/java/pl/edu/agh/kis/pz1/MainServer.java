@@ -6,7 +6,7 @@ import java.util.Scanner;
 /**
  * Server class.
  */
-public class Main1 {
+public class MainServer {
     /**
      * Main method.
      * asks for a number of players and starts a game.

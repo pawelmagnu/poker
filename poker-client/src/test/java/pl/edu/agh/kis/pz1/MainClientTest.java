@@ -4,7 +4,7 @@ import static junit.framework.TestCase.assertNotNull;
 import org.junit.Test;
 
 
-public class Main1Test {
+public class MainClientTest {
 
 
     /**
@@ -14,8 +14,8 @@ public class Main1Test {
      */
     @Test
     public void shouldCreateMainObject(){
-        Main1 main = new Main1();
-        assertNotNull("Main method called in class Main1.", main);
+        MainClient main = new MainClient();
+        assertNotNull("Main method called on class Main2.", main);
     }
 }
 
