@@ -8,34 +8,27 @@ import pl.edu.agh.kis.pz1.util.TextUtils;
 
 public class Game {
     private ClientThread[] clients;
-    private int playerCount;
     private int currentPlayer;
     private int[] currentBids;
+    private int currentMaxBid;
     private int totalBid;
     private int numberOfPlayers;
     private Deck deck;
     private int[] winnersThisRound;
     ServerSocket serverSocket;
-//    private boolean[] playersLeft;
 
     public Game(int numberOfPlayers) throws IOException {
         serverSocket = new ServerSocket(TextUtils.PORT);
-
-        playerCount = 0;
         this.numberOfPlayers = numberOfPlayers;
         clients = new ClientThread[numberOfPlayers];
         currentBids = new int[numberOfPlayers];
-        currentPlayer = 0;
-        totalBid = 0;
-
         for (int i = 0; i < numberOfPlayers; i++) {
-//            Socket client = serverSocket.accept();
             clients[i] = new ClientThread(serverSocket.accept());
             clients[i].player.setPlayerID(i);
+            clients[i].player.setBalance(TextUtils.STARTING_BALANCE);
             System.out.println("nowy gracz: " + clients[i].player.getPlayerID());
             clients[i].sendMessageWOR("Hello player "+i);
         }
-
     }
 
     public void nextPlayer() {
@@ -49,8 +42,12 @@ public class Game {
     }
 
     public void updateBalance(int totalBid, int[] winners) {
-        List asList = Arrays.asList(winners);
-        int howManyWinners = Collections.frequency(asList, 1);
+        int howManyWinners=0;
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (winners[i] == 1) {
+                howManyWinners++;
+            }
+        }
         for (int i = 0; i < numberOfPlayers; i++) {
             if (winners[i] == 1) {
                 clients[i].player.addToBalance(totalBid / howManyWinners);
@@ -64,10 +61,15 @@ public class Game {
         for (ClientThread player : clients) {
             player.player.clearHand();
             player.sendMessageWOR("NEW ROUND!!!");
+            if (player.player.getBalance() < TextUtils.ANTE) {
+                player.sendMessageWOR("You don't have enough money to play");
+            }
         }
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < numberOfPlayers; j++) {
-                clients[j].player.addCard(deck.draw());
+                if (clients[j].player.isInGame()){
+                    clients[j].player.addCard(deck.draw());
+                }
             }
         }
     }
@@ -99,6 +101,7 @@ public class Game {
     public void sendPlayerCards(){
         for (ClientThread player : clients) {
             player.showCards();
+            player.sendMessageWOR("Your balance is: "+ player.player.getBalance());
         }
     }
 
@@ -154,20 +157,36 @@ public class Game {
         }
     }
 
+    public void getAnte(){
+        totalBid = 0;
+        currentBids = new int[numberOfPlayers];
+        currentMaxBid = 0;
+        for (ClientThread player : clients) {
+            if (player.player.getBalance() < TextUtils.ANTE) {
+                player.sendMessageWOR("Nie masz wystarczająco dużo pieniędzy!");
+                player.player.setInGame(false);
+            }
+            else {
+                player.player.setBalance(player.player.getBalance() - TextUtils.ANTE);
+                this.totalBid += TextUtils.ANTE;
+                currentBids[player.player.getPlayerID()] = TextUtils.ANTE;
+            }
+        }
+        currentMaxBid = TextUtils.ANTE;
+    }
+
+
+
     public void gameRound() throws IOException {
         while (true) {
+            getAnte();
             startGame();
             sendPlayerCards();
             changePlayersHands();
             getWinners();
             sendWinners();
+            updateBalance(totalBid, winnersThisRound);
         }
-
-
-
-//        while (true) {
-//
-//        }
     }
 
 

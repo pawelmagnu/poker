@@ -25,6 +25,7 @@ public class PokerHands {
         }
         hand.setCards(temp.getCards());
     }
+
     public static int getHash(Hand hand) {
         int handType = getHandType(hand);
         int hash = handType*1000000;

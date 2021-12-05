@@ -5,12 +5,18 @@ public class Player{
     private int handHash;
     private int playerID;
     private int balance;
+    private boolean allIn;
+    private boolean folded;
+    private boolean inGame;
 
     public Player() {
         playerID = 0;
         hand = new Hand();
         balance = 0;
         handHash = 0;
+        allIn = false;
+        folded = false;
+        inGame = true;
     }
 
     public Player(int playerID, int balance) {
@@ -18,6 +24,9 @@ public class Player{
         hand = new Hand();
         this.balance = balance;
         handHash = 0;
+        allIn = false;
+        folded = false;
+        inGame = true;
     }
 
     public int getPlayerID() {
@@ -66,5 +75,29 @@ public class Player{
 
     public int getHandHash() {
         return handHash;
+    }
+
+    public boolean isAllIn() {
+        return allIn;
+    }
+
+    public void setAllIn(boolean allIn) {
+        this.allIn = allIn;
+    }
+
+    public boolean isFolded() {
+        return folded;
+    }
+
+    public void setFolded(boolean folded) {
+        this.folded = folded;
+    }
+
+    public boolean isInGame() {
+        return inGame;
+    }
+
+    public void setInGame(boolean inGame) {
+        this.inGame = inGame;
     }
 }

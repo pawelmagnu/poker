@@ -21,8 +21,6 @@ public class ClientThread extends Thread {
             e.printStackTrace();
         }
         player = new Player();
-//        sendMessageWOR("Hello");
-//        System.out.println("nowy gracz: " + player.getPlayerID());
     }
     public void showCards() {
         StringBuilder sb = new StringBuilder();
