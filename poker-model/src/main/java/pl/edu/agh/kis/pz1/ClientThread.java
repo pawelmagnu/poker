@@ -25,7 +25,7 @@ public class ClientThread extends Thread {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error while creating streams");
         }
         player = new Player();
     }
