@@ -31,14 +31,87 @@ public class Game {
         }
     }
 
-    public void nextPlayer() {
-        currentPlayer = (currentPlayer + 1) % numberOfPlayers;
+    private void getBet(ClientThread client) throws IOException {
+        int bet=0;
+        boolean flag=true;
+        do {
+            flag = true;
+            String response;
+            try {
+                response = client.sendMessage("Co chcesz zrobic?");
+                if (response.trim().equals("fold")) {
+                    client.player.setInGame(false);
+                }
+                else if (response.trim().equals("check")) {
+                    if (client.player.getBalance() < currentMaxBid) {
+                        client.sendMessageWOR("You don't have enough money to play");
+                        client.player.setInGame(false);
+                    }
+                    else if (currentBids[client.player.getPlayerID()] != currentMaxBid) {
+                        int diff = currentMaxBid - currentBids[client.player.getPlayerID()];
+                        client.player.addToBalance(-diff);
+                        currentBids[client.player.getPlayerID()] = currentMaxBid;
+                    }
+                }
+                else if (response.trim().equals("")) {
+                    client.sendMessageWOR("You didn't enter anything");
+                    flag = false;
+                }
+                else {
+                    bet = Integer.parseInt(response);
+                    int diff = bet - currentBids[client.player.getPlayerID()];
+                    if (diff > client.player.getBalance()) {
+                        client.sendMessageWOR("You don't have enough money for that");
+                        flag = false;
+                    }
+                    else if (bet < currentMaxBid) {
+                        client.sendMessageWOR("You can't bet less than current max");
+                        flag = false;
+                    }
+                    else {
+                        client.player.addToBalance(-diff);
+                        currentMaxBid = bet;
+                        currentBids[client.player.getPlayerID()] = bet;
+                        totalBid += diff;
+                    }
+                }
+            }
+            catch (NumberFormatException e) {
+                client.sendMessageWOR("You didn't enter a number");
+                flag = false;
+            }
+            catch (IOException e) {
+                client.sendMessageWOR("Podano zły komunikat");
+                flag = false;
+            }
+        }
+        while (!flag);
     }
 
-    public void nextGame() {
-        currentPlayer = 0;
-        currentBids = new int[numberOfPlayers];
-        totalBid = 0;
+    private void getBetsFromPlayers() throws IOException {
+        boolean flag = true;
+        do {
+            flag = true;
+            for (ClientThread player : clients) {
+                if (player.player.isInGame()) {
+                    player.sendMessageWOR("Current max bid is " + currentMaxBid);
+                    player.sendMessageWOR("Obecny bet to:" + currentBids[player.player.getPlayerID()]);
+                    player.sendMessageWOR("Twoj balance to:" + player.player.getBalance());
+                    player.sendMessageWOR("Jesli chcesz podbic wpisz do ilu");
+                    player.sendMessageWOR("Jesli chcesz wyjsc wpisz fold");
+                    player.sendMessageWOR("Jesli chcesz zakonczyc wpisz check");
+                    getBet(player);
+                }
+            }
+            for (ClientThread player : clients) {
+                if (player.player.isInGame()) {
+                    if (currentBids[player.player.getPlayerID()] != currentMaxBid) {
+                        flag = false;
+                    }
+                }
+            }
+        }
+        while (!flag);
     }
 
     public void updateBalance(int totalBid, int[] winners) {
@@ -156,7 +229,9 @@ public class Game {
 
     public void changePlayersHands(){
         for (ClientThread player : clients) {
-            changePlayerCards(player);
+            if (player.player.isInGame()) {
+                changePlayerCards(player);
+            }
         }
     }
 
@@ -170,22 +245,23 @@ public class Game {
                 player.player.setInGame(false);
             }
             else {
+                player.sendMessageWOR("Pobrano ANTE w wysokosci:"+ TextUtils.ANTE);
+                player.player.setInGame(true);
                 player.player.setBalance(player.player.getBalance() - TextUtils.ANTE);
                 this.totalBid += TextUtils.ANTE;
-                currentBids[player.player.getPlayerID()] = TextUtils.ANTE;
+                currentBids[player.player.getPlayerID()] = 0;
             }
         }
-        currentMaxBid = TextUtils.ANTE;
     }
-
-
 
     public void gameRound() throws IOException {
         while (true) {
             getAnte();
             startGame();
             sendPlayerCards();
+            getBetsFromPlayers();
             changePlayersHands();
+            getBetsFromPlayers();
             getWinners();
             sendWinners();
             updateBalance(totalBid, winnersThisRound);
