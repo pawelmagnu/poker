@@ -90,7 +90,6 @@ public class CompareHands {
         return result;
     }
     public int[] getWinners(Player[] players) {
-//        players = sortPlayersByHash(players);
         int topHandScore = topHandScore(players);
         if(topHandScore == 0 || topHandScore == 4 || topHandScore == 5 || topHandScore == 8) {
             return getWinnersByHash(players, players[0].getHandHash());
@@ -135,10 +134,8 @@ public class CompareHands {
                 }
             }
             for (int i = 0; i < players.length; i++) {
-                if(pairsTypes[i][0] == maxType1) {
-                    if(pairsTypes[i][1] > maxType2) {
-                        maxType2 = pairsTypes[i][1];
-                    }
+                if(pairsTypes[i][0] == maxType1 && pairsTypes[i][1] > maxType2) {
+                    maxType2 = pairsTypes[i][1];
                 }
             }
             int[] values = new int[players.length];
@@ -218,7 +215,7 @@ public class CompareHands {
             }
             return result;
         }
-        return null;
+        return new int[players.length];
     }
     public int[] parseWinners(Player[] players, int[] winners) {
         int[] result = new int[players.length];

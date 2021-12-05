@@ -65,8 +65,8 @@ public class Hand {
 
     public Hand getHandFromString(String hand) {
         Hand newHand = new Hand();
-        String[] cards = hand.split(",");
-        for (String card : cards) {
+        String[] cardsToAdd = hand.split(",");
+        for (String card : cardsToAdd) {
             newHand.addCard(Card.getCardFromString(card));
         }
         return newHand;

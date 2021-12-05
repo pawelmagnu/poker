@@ -48,6 +48,9 @@ public class Game {
                 howManyWinners++;
             }
         }
+        if (howManyWinners == 0) {
+            howManyWinners = 1;
+        }
         for (int i = 0; i < numberOfPlayers; i++) {
             if (winners[i] == 1) {
                 clients[i].player.addToBalance(totalBid / howManyWinners);
