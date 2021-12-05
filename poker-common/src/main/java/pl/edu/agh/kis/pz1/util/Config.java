@@ -1,6 +1,9 @@
 package pl.edu.agh.kis.pz1.util;
 
-public class TextUtils {
+/**
+ * Class representing configuration of the application.
+ */
+public class Config {
     public static final int PORT = 8080;
     public static final String HOST = "localhost";
     public static final int ANTE = 1;

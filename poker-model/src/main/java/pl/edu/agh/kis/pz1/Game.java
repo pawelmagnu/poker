@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.*;
 
-import pl.edu.agh.kis.pz1.util.TextUtils;
+import pl.edu.agh.kis.pz1.util.Config;
 
+/**
+ * Class representing a game.
+ * Predominantly used for server side.
+ */
 public class Game {
     private ClientThread[] clients;
     private int[] currentBids;
@@ -16,16 +20,21 @@ public class Game {
     private int[] winnersThisRound;
     ServerSocket serverSocket;
 
+    /**
+     * Constructor that creates a new game with the given amount of players
+     * @param numberOfPlayers given number of players
+     * @throws IOException when there is a problem with the server socket
+     */
     public Game(int numberOfPlayers) throws IOException {
-        serverSocket = new ServerSocket(TextUtils.PORT);
+        serverSocket = new ServerSocket(Config.PORT);
         this.numberOfPlayers = numberOfPlayers;
         clients = new ClientThread[numberOfPlayers];
         currentBids = new int[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
             clients[i] = new ClientThread(serverSocket.accept());
             clients[i].player.setPlayerID(i);
-            clients[i].player.setBalance(TextUtils.STARTING_BALANCE);
-            System.out.println("nowy gracz: " + clients[i].player.getPlayerID());
+            clients[i].player.setBalance(Config.STARTING_BALANCE);
+            System.out.println("New player: " + clients[i].player.getPlayerID());
             clients[i].sendMessageWOR("Hello player "+i);
         }
     }
@@ -37,17 +46,17 @@ public class Game {
             flag = true;
             String response;
             try {
-                response = client.sendMessage("Co chcesz zrobic?");
+                response = client.sendMessage("What do you want to do?");
                 if (response.trim().equals("fold")) {
                     client.player.setInGame(false);
                 }
                 else if (response.trim().equals("check")) {
-                    if (client.player.getBalance() < currentMaxBid) {
+                    int diff = currentMaxBid - currentBids[client.player.getPlayerID()];
+                    if (client.player.getBalance() < diff) {
                         client.sendMessageWOR("You don't have enough money to play");
                         client.player.setInGame(false);
                     }
                     else if (currentBids[client.player.getPlayerID()] != currentMaxBid) {
-                        int diff = currentMaxBid - currentBids[client.player.getPlayerID()];
                         client.player.addToBalance(-diff);
                         currentBids[client.player.getPlayerID()] = currentMaxBid;
                     }
@@ -80,7 +89,7 @@ public class Game {
                 flag = false;
             }
             catch (IOException e) {
-                client.sendMessageWOR("Podano zły komunikat");
+                client.sendMessageWOR("Bad keyword passed");
                 flag = false;
             }
         }
@@ -93,12 +102,12 @@ public class Game {
             flag = true;
             for (ClientThread player : clients) {
                 if (player.player.isInGame()) {
-                    player.sendMessageWOR("Current max bid is " + currentMaxBid);
-                    player.sendMessageWOR("Obecny bet to:" + currentBids[player.player.getPlayerID()]);
-                    player.sendMessageWOR("Twoj balance to:" + player.player.getBalance());
-                    player.sendMessageWOR("Jesli chcesz podbic wpisz do ilu");
-                    player.sendMessageWOR("Jesli chcesz wyjsc wpisz fold");
-                    player.sendMessageWOR("Jesli chcesz zakonczyc wpisz check");
+                    player.sendMessageWOR("Current max bid is: " + currentMaxBid);
+                    player.sendMessageWOR("Your current bet is: " + currentBids[player.player.getPlayerID()]);
+                    player.sendMessageWOR("Your balance is: " + player.player.getBalance());
+                    player.sendMessageWOR("If you want to raise type the amount <amount>");
+                    player.sendMessageWOR("If you want to exit this round type <fold>");
+                    player.sendMessageWOR("If you want to check type <check>");
                     getBet(player);
                 }
             }
@@ -111,7 +120,7 @@ public class Game {
         while (!flag);
     }
 
-    public void updateBalance(int totalBid, int[] winners) {
+    private void updateBalance(int totalBid, int[] winners) {
         int howManyWinners=0;
         for (int i = 0; i < numberOfPlayers; i++) {
             if (winners[i] == 1) {
@@ -128,13 +137,13 @@ public class Game {
         }
     }
 
-    public void startGame() {
+    private void startGame() {
         this.deck = new Deck();
         deck.shuffle();
         for (ClientThread player : clients) {
             player.player.clearHand();
             player.sendMessageWOR("NEW ROUND!!!");
-            if (player.player.getBalance() < TextUtils.ANTE) {
+            if (player.player.getBalance() < Config.ANTE) {
                 player.sendMessageWOR("You don't have enough money to play");
             }
         }
@@ -147,7 +156,7 @@ public class Game {
         }
     }
 
-    public void getWinners(){
+    private void getWinners(){
         CompareHands compareHands = new CompareHands();
         Player[] playersCopy = new Player[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -158,7 +167,7 @@ public class Game {
         winnersThisRound = compareHands.parseWinners(playersCopy, winners);
     }
 
-    public void sendWinners(){
+    private void sendWinners(){
         for (int i = 0; i < numberOfPlayers; i++) {
             if (winnersThisRound[i] == 1) {
                 clients[i].sendMessageWOR("You won this round");
@@ -171,14 +180,14 @@ public class Game {
         }
     }
 
-    public void sendPlayerCards(){
+    private void sendPlayerCards(){
         for (ClientThread player : clients) {
             player.showCards();
             player.sendMessageWOR("Your balance is: "+ player.player.getBalance());
         }
     }
 
-    public void changePlayerCards(ClientThread player){
+    private void changePlayerCards(ClientThread player){
         boolean flag = true;
         List<Integer> cardsIndicesToRemove = new ArrayList<>();
         do {
@@ -186,7 +195,7 @@ public class Game {
             String response;
             cardsIndicesToRemove.clear();
             try {
-                response = player.sendMessage("Podaj ktore karty chcesz wymienic (jesli nie chcesz wymienic kliknij enter)");
+                response = player.sendMessage("Type the indexes of cards you want to change (if none press enter)");
                 if (!response.trim().equals("")) {
                     String[] cards = response.split(",");
 
@@ -201,11 +210,11 @@ public class Game {
                 }
             }
             catch (NumberFormatException e) {
-                player.sendMessageWOR("Podano nieprawidłową wartość!");
+                player.sendMessageWOR("Passed wrong value!");
                 flag = false;
             }
             catch (Exception e) {
-                player.sendMessageWOR("Nie ma takiej karty!");
+                player.sendMessageWOR("No such card!");
                 flag = false;
             }
         }
@@ -217,14 +226,14 @@ public class Game {
         for (Card card : cardsToRemove) {
             player.player.getHand().removeCard(card);
         }
-        int howManyCardsToAdd = TextUtils.HAND_SIZE- player.player.getHand().getSize();
+        int howManyCardsToAdd = Config.HAND_SIZE- player.player.getHand().getSize();
         for (int i = 0; i < howManyCardsToAdd; i++) {
             player.player.addCard(deck.draw());
         }
         player.showCards();
     }
 
-    public void changePlayersHands(){
+    private void changePlayersHands(){
         for (ClientThread player : clients) {
             if (player.player.isInGame()) {
                 changePlayerCards(player);
@@ -232,25 +241,30 @@ public class Game {
         }
     }
 
-    public void getAnte(){
+    private void getAnte(){
         totalBid = 0;
         currentBids = new int[numberOfPlayers];
         currentMaxBid = 0;
         for (ClientThread player : clients) {
-            if (player.player.getBalance() < TextUtils.ANTE) {
-                player.sendMessageWOR("Nie masz wystarczająco dużo pieniędzy!");
+            if (player.player.getBalance() < Config.ANTE) {
+                player.sendMessageWOR("Insufficient balance!");
                 player.player.setInGame(false);
             }
             else {
-                player.sendMessageWOR("Pobrano ANTE w wysokosci:"+ TextUtils.ANTE);
+                player.sendMessageWOR("Taken ANTE :"+ Config.ANTE);
                 player.player.setInGame(true);
-                player.player.setBalance(player.player.getBalance() - TextUtils.ANTE);
-                this.totalBid += TextUtils.ANTE;
+                player.player.setBalance(player.player.getBalance() - Config.ANTE);
+                this.totalBid += Config.ANTE;
                 currentBids[player.player.getPlayerID()] = 0;
             }
         }
     }
 
+    /**
+     * Method used to get continous round of poker game
+     * Calls methods of consecutive stages of a round
+     * @throws IOException when there is a problem with communication with client
+     */
     public void gameRound() throws IOException {
         while (true) {
             getAnte();
@@ -264,6 +278,4 @@ public class Game {
             updateBalance(totalBid, winnersThisRound);
         }
     }
-
-
 }

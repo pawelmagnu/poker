@@ -1,5 +1,8 @@
 package pl.edu.agh.kis.pz1;
 
+/**
+ * Class used for comparing hands and determining winner.
+ */
 public class CompareHands {
     private int topHandScore(Player[] players) {
         int max = 0;
@@ -72,6 +75,12 @@ public class CompareHands {
     private int getQuadsType(Hand hand) {
         return hand.getCard(2).getRank().ordinal();
     }
+
+    /**
+     * Method for sorting given players by their hash
+     * @param players array of players
+     * @return array of players sorted by their hash
+     */
     public Player[] sortPlayersByHash(Player[] players) {
         Player[] result = new Player[players.length];
         for (int i = 0; i < players.length; i++) {
@@ -89,6 +98,12 @@ public class CompareHands {
         }
         return result;
     }
+
+    /**
+     * Method for determining winner of given players
+     * @param players array of players
+     * @return array of players with 1 in the index of player who won and 0 in the others
+     */
     public int[] getWinners(Player[] players) {
         int topHandScore = topHandScore(players);
         if(topHandScore == 0 || topHandScore == 4 || topHandScore == 5 || topHandScore == 8) {
@@ -217,6 +232,13 @@ public class CompareHands {
         }
         return new int[players.length];
     }
+
+    /**
+     * Method for proper parsing winners into more useful format
+     * @param players - sorted array of players
+     * @param winners - array of winners from sorted players
+     * @return - array of winners sorted by their id
+     */
     public int[] parseWinners(Player[] players, int[] winners) {
         int[] result = new int[players.length];
         for (int i = 0; i < players.length; i++) {

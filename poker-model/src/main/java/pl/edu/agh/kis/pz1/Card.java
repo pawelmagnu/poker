@@ -1,5 +1,8 @@
 package pl.edu.agh.kis.pz1;
 
+/**
+ * Class representing a card.
+ */
 public class Card {
     public enum Rank {
         TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE
@@ -7,36 +10,44 @@ public class Card {
     public enum Suit{
         CLUBS, DIAMONDS, HEARTS, SPADES
     }
-    private Suit suit;
-    private Rank rank;
+    private final Suit suit;
+    private final Rank rank;
 
-    public Card(Suit suit, Rank rank) {
-        this.suit = suit;
-        this.rank = rank;
-    }
+    /**
+     * Creates a new card with given rank and suit but in a numerical form.
+     * @param rank of the card
+     * @param suit of the card
+     */
     public Card(Integer rank, Integer suit) {
         this.suit = Suit.values()[suit];
         this.rank = Rank.values()[rank];
     }
 
+    /**
+     * Returns the suit of the card.
+     * @return suit
+     */
     public Suit getSuit() {
         return suit;
     }
 
+    /**
+     * Returns the rank of the card.
+     * @return rank
+     */
     public Rank getRank() {
         return rank;
     }
 
+    /**
+     * Comparator for cards.
+     * @return if this card is the same as the given card
+     */
     public boolean isSame(Card card) {
         if(card == this) return true;
-        if(card == null) return false;
+        if(card == null)   return false;
         if(card.getClass() != this.getClass()) return false;
         return this.suit == card.suit && this.rank == card.rank;
-    }
-
-    public static Card getCardFromString(String card) {
-        String[] cardSplit = card.split(" ");
-        return new Card(Suit.valueOf(cardSplit[1]), Rank.valueOf(cardSplit[0]));
     }
 
     @Override

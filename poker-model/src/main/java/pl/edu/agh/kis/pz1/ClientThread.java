@@ -5,13 +5,20 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * Class representing client socket.
+ */
 public class ClientThread extends Thread {
     public Player player;
     PrintWriter out;
     BufferedReader in;
     Socket clientSocket;
 
-    public ClientThread(Socket socket) throws IOException {
+    /**
+     * Constructor of ClientThread class.
+     * @param socket socket of client
+     */
+    public ClientThread(Socket socket) {
         super();
         this.clientSocket = socket;
         try {
@@ -22,6 +29,10 @@ public class ClientThread extends Thread {
         }
         player = new Player();
     }
+
+    /**
+     * Converts player hand to string and sends it to them via socket.
+     */
     public void showCards() {
         StringBuilder sb = new StringBuilder();
         for (int j = 0; j < player.getHand().getSize(); j++) {
@@ -29,10 +40,22 @@ public class ClientThread extends Thread {
         }
         sendMessageWOR(sb.toString());
     }
+
+    /**
+     * Sends message to client without response.
+     * @param message message to send
+     */
     public void sendMessageWOR(String message) {
         out.println(-1);
         out.println(message);
     }
+
+    /**
+     * Sends message to client with response.
+     * @param message message to send
+     * @return response from client
+     * @throws IOException in case of error
+     */
     public String sendMessage(String message) throws IOException {
         out.println(1);
         out.println(message);
