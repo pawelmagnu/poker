@@ -59,6 +59,7 @@ public class Game {
                     else if (currentBids[client.player.getPlayerID()] != currentMaxBid) {
                         client.player.addToBalance(-diff);
                         currentBids[client.player.getPlayerID()] = currentMaxBid;
+                        totalBid += diff;
                     }
                 }
                 else if (response.trim().equals("")) {
